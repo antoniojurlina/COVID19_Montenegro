@@ -29,7 +29,7 @@ plot <- covid_data %>%
   scale_fill_ptol() +
   theme_par() +
   labs(title = "COVID-19 Cases in Montenegro",
-       subtitle = "as of March 27th, 2020",
+       subtitle = paste0("as of ", Sys.Date()),
        caption = "https://www.ijzcg.me/me/ncov") +
   theme(axis.title.x = element_blank(),
         legend.title = element_blank(),
