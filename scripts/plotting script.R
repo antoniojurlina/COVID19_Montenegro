@@ -38,3 +38,5 @@ plot <- covid_data %>%
 ggsave("COVID-19 Cases in Montenegro.jpeg", plot, height = 8, width = 7)
 
 
+
+
