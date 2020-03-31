@@ -30,7 +30,7 @@ plot <- covid_data %>%
   scale_fill_ptol() +
   theme_par() +
   labs(title = "COVID-19 Broj zaraženih u Crnoj Gori",
-       subtitle = paste0("od ", Sys.Date()),
+       subtitle = paste0("ažurirano ", Sys.Date()),
        caption = "https://www.ijzcg.me/me/ncov") +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
@@ -58,7 +58,7 @@ plot <- covid_data %>%
   scale_fill_ptol() +
   theme_par() +
   labs(title = "COVID-19 Dnevno stanje u Crnoj Gori",
-       subtitle = paste0("od ", Sys.Date()),
+       subtitle = paste0("ažurirano ", Sys.Date()),
        caption = "https://www.ijzcg.me/me/ncov") +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
@@ -94,7 +94,7 @@ plot <- covid_data %>%
   scale_fill_ptol() +
   theme_par() +
   labs(title = "COVID-19 Rast u Crnoj Gori",
-       subtitle = paste0("do ", Sys.Date()),
+       subtitle = paste0("ažurirano ", Sys.Date()),
        caption = "https://www.ijzcg.me/me/ncov") +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
@@ -106,6 +106,45 @@ plot <- plot + annotate("text", x = 14, y = max_y+5, label = "Policijski čas", 
 plot <- plot + annotate("text", x = 3, y = max_y+5, label = "Vojna pomoć", color = "gray20", size = 4)
 
 ggsave("COVID-19 Growth in Montenegro.jpeg", plot, height = 8, width = 10)
+
+plot <- covid_data %>%
+  group_by(date, municipality) %>%
+  summarize(confirmed = mean(confirmed, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  filter(date == last(date)) %>% 
+  arrange(desc(confirmed)) %>% 
+  ggplot(aes(x = reorder(municipality, -confirmed), y = confirmed, label = confirmed)) +
+  geom_col(show.legend = F, fill = "#004488", colour = "#004488") +
+  coord_flip() +
+  geom_text(nudge_y = 0.8) +
+  theme_par() +
+  ylab("Ukupno zaraženih") +
+  labs(title = "COVID-19 Broj zaraženih po opštini u Crnoj Gori",
+       subtitle = paste0("ažurirano ", Sys.Date()),
+       caption = "https://www.ijzcg.me/me/ncov") +
+  theme(axis.title.y = element_blank())
+
+ggsave("COVID-19 Municipality Data in Montenegro.jpeg", plot, height = 8, width = 10)
+
+plot <- map_data("world") %>% 
+  filter(region == "Montenegro") %>%
+  ggplot(aes(x = long, y = lat)) +
+  geom_polygon(aes(group = group), fill = "#DDAA33", color = "#004488", size = 0.3) +
+  coord_fixed(ratio = 1.3) +
+  theme_map()
+
+plot <- plot + geom_point(data = covid_data %>%
+                  filter(date == last(date)), 
+                  aes(x = long, y = lat, size = confirmed),
+                  show.legend = F, alpha = 0.6, color = "#004488")
+
+plot <- plot + scale_size(range = c(2, 35))
+
+ggsave("COVID-19 Montenegro Map.jpeg", plot, height = 8, width = 8)
+ 
+
+
+  
  
   
 
