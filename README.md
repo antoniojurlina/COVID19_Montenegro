@@ -1,6 +1,5 @@
 # COVID19_Montenegro
 2020 coronavirus pandemic in Montenegro
-[![Run on Repl.it](https://repl.it/badge/github/antoniojurlina/COVID19_Montenegro)](https://repl.it/github/antoniojurlina/COVID19_Montenegro)
 
 There is a regularly updated csv in the data folder. However, before March 27th, data is largely missing on municipality level, only country totals are known. 
 
