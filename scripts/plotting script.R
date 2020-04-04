@@ -159,6 +159,34 @@ plot <- covid_data %>%
   theme(axis.title.y = element_blank())
 
 ggsave("COVID-19 Municipality Data in Montenegro 2.jpeg", plot, height = 8, width = 10)
+
+plot <- covid_data %>%
+  group_by(date) %>%
+  summarize(confirmed = sum(confirmed, na.rm = TRUE),
+            deaths = sum(deaths, na.rm = TRUE),
+            population_mne = mean(population_mne, na.rm = TRUE)) %>% 
+  mutate(confirmed = 100000 * confirmed / population_mne,
+         deaths = 100000 * deaths / population_mne) %>% 
+  pivot_longer(cols = 2:3, names_to = "type", values_to = "cases") %>%
+  mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", "deaths" = "Preminuli")) %>% 
+  ungroup() %>%
+  ggplot(aes(x = factor(date), y = cases, 
+             color = factor(type, levels = c("Ukupno zaraženih", "Preminuli")), 
+             fill = factor(type, levels = c("Ukupno zaraženih", "Preminuli")))) +
+  geom_col() +
+  scale_color_ptol() +
+  scale_fill_ptol() +
+  theme_par() +
+  labs(title = "COVID-19 Broj zaraženih (na svakih 100,000 stanovnika) u Crnoj Gori",
+       subtitle = paste0("ažurirano ", Sys.Date()),
+       caption = "https://www.ijzcg.me/me/ncov") +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+        legend.title = element_blank(),
+        legend.position = "bottom")
+
+ggsave("COVID-19 Cases in Montenegro 2.jpeg", plot, height = 8, width = 7)
  
 
 
