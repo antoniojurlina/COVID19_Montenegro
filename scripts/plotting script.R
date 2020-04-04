@@ -1,9 +1,7 @@
 #-------- packages --------
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(scales)
 library(ggthemes)
-library(tidyr)
 
 #-------- data and directory --------
 directory <- paste0(here::here(), "/data")
@@ -116,7 +114,7 @@ plot <- covid_data %>%
   ggplot(aes(x = reorder(municipality, -confirmed), y = confirmed, label = confirmed)) +
   geom_col(show.legend = F, fill = "#004488", colour = "#004488") +
   coord_flip() +
-  geom_text(nudge_y = 0.8) +
+  geom_text(nudge_y = 1.2) +
   theme_par() +
   ylab("Ukupno zaraženih") +
   labs(title = "COVID-19 Broj zaraženih po opštini u Crnoj Gori",
