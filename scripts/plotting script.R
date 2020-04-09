@@ -77,12 +77,12 @@ plot <- covid_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE)) %>% 
-  mutate(thirty = cumprod(c(2, rep(1.3, length(confirmed)-1)))) %>% 
+  mutate(thirty = cumprod(c(2, rep(1.23, length(confirmed)-1)))) %>% 
   ungroup() %>%
   pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>% 
   mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", 
                              "deaths" = "Preminuli",
-                             "thirty" = "Dnevni rast od 30%")) %>% 
+                             "thirty" = "Dnevni rast od 23%")) %>% 
   ggplot(aes(x = factor(date), y = cases, color = type, fill = type, group = type)) +
   geom_line() +
   geom_vline(aes(xintercept = 14), alpha = 0.3) +
