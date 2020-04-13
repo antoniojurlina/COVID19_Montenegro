@@ -77,12 +77,12 @@ plot <- covid_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE)) %>% 
-  mutate(thirty = cumprod(c(2, rep(1.23, length(confirmed)-1)))) %>% 
+  mutate(thirty = cumprod(c(2, rep(1.20, length(confirmed)-1)))) %>% 
   ungroup() %>%
   pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>% 
   mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", 
                              "deaths" = "Preminuli",
-                             "thirty" = "Dnevni rast od 23%")) %>% 
+                             "thirty" = "Dnevni rast od 20%")) %>% 
   ggplot(aes(x = factor(date), y = cases, color = type, fill = type, group = type)) +
   geom_line() +
   geom_vline(aes(xintercept = 14), alpha = 0.3) +
@@ -114,7 +114,7 @@ plot <- covid_data %>%
   ggplot(aes(x = reorder(municipality, -confirmed), y = confirmed, label = confirmed)) +
   geom_col(show.legend = F, fill = "#004488", colour = "#004488") +
   coord_flip() +
-  geom_text(nudge_y = 1.2) +
+  geom_text(nudge_y = 2.4) +
   theme_par() +
   ylab("Ukupno zaraženih") +
   labs(title = "COVID-19 Broj zaraženih po opštini u Crnoj Gori",
