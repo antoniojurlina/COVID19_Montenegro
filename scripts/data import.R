@@ -1,5 +1,6 @@
 #-------- packages --------
 library(tidyverse)
+library(tidylog)
 
 #-------- data and directory --------
 directory <- paste0(here::here(), "/data")
