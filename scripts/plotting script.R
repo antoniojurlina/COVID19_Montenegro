@@ -78,12 +78,12 @@ plot <- covid_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE)) %>% 
-  mutate(thirty = cumprod(c(2, rep(1.20, length(confirmed)-1)))) %>% 
+  mutate(thirty = cumprod(c(2, rep(1.15, length(confirmed)-1)))) %>% 
   ungroup() %>%
   pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>% 
   mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", 
                              "deaths" = "Preminuli",
-                             "thirty" = "Dnevni rast od 20%")) %>% 
+                             "thirty" = "Dnevni rast od 15%")) %>% 
   ggplot(aes(x = factor(date), y = cases, color = type, fill = type, group = type)) +
   geom_line() +
   geom_vline(aes(xintercept = 14), alpha = 0.3) +
@@ -104,7 +104,7 @@ plot <- covid_data %>%
 plot <- plot + annotate("text", x = 14, y = max_y+5, label = "Policijski čas", color = "gray20", size = 4)
 plot <- plot + annotate("text", x = 3, y = max_y+5, label = "Vojna pomoć", color = "gray20", size = 4)
 
-ggsave("COVID-19 Growth in Montenegro.jpeg", plot, height = 8, width = 10)
+ggsave("COVID-19 Growth in Montenegro.jpeg", plot, height = 8, width = 11)
 
 plot <- covid_data %>%
   group_by(date, municipality) %>%
