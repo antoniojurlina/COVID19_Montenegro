@@ -145,7 +145,12 @@ plot <- map_data("world") %>%
 plot <- plot + geom_point(data = covid_data %>%
                   filter(date == last(date)), 
                   aes(x = long, y = lat, size = confirmed),
-                  show.legend = F, alpha = 0.6, color = "#004488")
+                  show.legend = F, alpha = 0.7, color = "#004488")
+
+plot <- plot + geom_point(data = covid_data %>%
+                            filter(date == last(date)), 
+                          aes(x = long, y = lat, size = active),
+                          show.legend = F, alpha = 0.7, color = "#BB5566")
 
 plot <- plot + scale_size(range = c(2, 35))
 
