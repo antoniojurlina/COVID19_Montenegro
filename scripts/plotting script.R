@@ -24,10 +24,10 @@ plot <- covid_data %>%
                              "recovered" = "Oporavljeni",
                              "deaths" = "Preminuli")) %>% 
   ungroup() %>%
-  ggplot(aes(x = factor(date), y = cases, 
+  ggplot(aes(x = date, y = cases, 
              color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
              fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
-  geom_col() +
+  geom_area(position = "dodge") +
   scale_color_ptol() +
   scale_fill_ptol() +
   theme_par() +
@@ -194,10 +194,10 @@ plot <- covid_data %>%
                              "deaths" = "Preminuli", 
                              "recovered" = "Oporavljeni")) %>% 
   ungroup() %>%
-  ggplot(aes(x = factor(date), y = cases, 
+  ggplot(aes(x = date, y = cases, 
              color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
              fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
-  geom_col() +
+  geom_area(position = "dodge") +
   scale_color_ptol() +
   scale_fill_ptol() +
   theme_par() +
