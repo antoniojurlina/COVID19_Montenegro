@@ -13,3 +13,4 @@ covid_data <- read_csv("montenegro_covid19.csv") %>%
 
 # save the data frame for further analysis
 save(covid_data, file = "montenegro_covid19.RData")
+
