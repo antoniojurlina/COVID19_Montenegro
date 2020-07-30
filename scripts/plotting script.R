@@ -56,7 +56,7 @@ plot <- covid_data %>%
   mutate(type = recode(type, "confirmed" = "Ukupno zaraženih",
                              "recovered" = "Oporavljeni",
                              "deaths" = "Preminuli")) %>% 
-  ggplot(aes(x = factor(date), y = cases, 
+  ggplot(aes(x = date, y = cases, 
              color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
              fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
   geom_col(width = 0.5) +
@@ -91,7 +91,7 @@ plot <- covid_data %>%
   mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", 
                              "deaths" = "Preminuli",
                              "thirty" = "Dnevni rast od 15%")) %>% 
-  ggplot(aes(x = factor(date), y = cases, color = type, fill = type, group = type)) +
+  ggplot(aes(x = date, y = cases, color = type, fill = type, group = type)) +
   geom_line() +
   geom_vline(aes(xintercept = 14), alpha = 0.3) +
   geom_vline(aes(xintercept = 3), alpha = 0.3) +
@@ -125,7 +125,7 @@ plot <- covid_data %>%
   geom_col(aes(x = reorder(municipality, -confirmed), y = recovered),
            fill = "#DDAA33", colour = "#DDAA33") +
   coord_flip() +
-  geom_text(nudge_y = 2.4) +
+  geom_text(nudge_y = 30) +
   theme_par() +
   ylab("Ukupno zaraženih i oporavljenih") +
   labs(title = "Broj zaraženih i oporavljenih po opštini u Crnoj Gori",
@@ -170,7 +170,7 @@ plot <- covid_data %>%
   geom_col(aes(x = reorder(municipality, -confirmed), y = recovered),
            fill = "#DDAA33", colour = "#DDAA33") +
   coord_flip() +
-  geom_text(nudge_y = 0.6) +
+  geom_text(nudge_y = 1.8) +
   theme_par() +
   ylab("Ukupno zaraženih i oporavljenih (na svakih 5000 stanovnika)") +
   labs(title = "Broj zaraženih i oporavljenih (na svakih 5000 stanovnika) po opštini u Crnoj Gori",
