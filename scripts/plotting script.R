@@ -19,6 +19,21 @@ plot <- covid19_data %>%
 
 ggsave("municipalities.jpeg", plot, height = 7, width = 9)
 
+plot <- covid19_data %>% 
+  group_by(date) %>%
+  summarize(pcr = first(pcr),
+            confirmed = sum(confirmed, na.rm = TRUE)) %>% 
+  mutate(confirmed_diff = c(2, diff(confirmed, lag = 1))) %>%
+  ungroup() %>% 
+  ggplot(aes(x = date)) +
+  geom_col(aes(y = confirmed_diff), width = 0.5, color = "#CC3311") +
+  geom_line(aes(y = pcr), size = 0.2) +
+  geom_vline(aes(xintercept = covid19_data$date[2600]), color = "#0077BB", size = 5, alpha = 0.3) +
+  annotate("text", x = covid19_data$date[2450], y = 780, label = "Election", color = "black", size = 4) +
+  theme_wsj() 
+
+ggsave("election.jpg", plot, height = 7, width = 9)
+
 plot <- covid19_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
