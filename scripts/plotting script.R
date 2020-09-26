@@ -5,83 +5,93 @@ library(scales)
 library(ggthemes)
 
 #-------- data and directory --------
-directory <- paste0(here::here(), "/data")
-setwd(directory)
+paste0(here::here(), "/data") %>% setwd()
 
 load("montenegro_covid19.RData")
 
 #-------- plots --------
-directory <- paste0(here::here(), "/output")
-setwd(directory)
+paste0(here::here(), "/output") %>% setwd()
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
+  ggplot(aes(x = date, y = confirmed, color = municipality, group = municipality)) +
+  geom_line() +
+  theme_wsj()
+
+ggsave("municipalities.jpeg", plot, height = 7, width = 9)
+
+plot <- covid19_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE),
             recovered = sum(recovered, na.rm = TRUE)) %>% 
   pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>%
-  mutate(type = recode(type, "confirmed" = "Ukupno zaraženih",
-                             "recovered" = "Oporavljeni",
-                             "deaths" = "Preminuli")) %>% 
+  mutate(type = recode(type, "confirmed" = "Confirmed",
+                             "recovered" = "Recovered",
+                             "deaths" = "Deaths")) %>% 
   ungroup() %>%
   ggplot(aes(x = date, y = cases, 
-             color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
-             fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
+             color = factor(type, levels = c("Confirmed", "Recovered", "Deaths")), 
+             fill = factor(type, levels = c("Confirmed", "Recovered", "Deaths")))) +
   geom_area(position = "dodge") +
-  scale_color_ptol() +
-  scale_fill_ptol() +
-  theme_par() +
-  labs(title = "COVID-19 Broj zaraženih u Crnoj Gori",
-       subtitle = paste0("ažurirano ", Sys.Date()),
-       caption = "https://www.ijzcg.me/me/ncov") +
+  scale_color_wsj() +
+  scale_fill_wsj() +
+  theme_wsj() +
+  scale_y_continuous(label = comma) +
+  labs(title = "COVID-19 Cases in Montenegro",
+       subtitle = paste0("updated ", Sys.Date())) +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         legend.title = element_blank(),
         legend.position = "bottom")
 
-ggsave("COVID-19 Cases in Montenegro.jpeg", plot, height = 8, width = 7)
+ggsave("COVID-19 Cases in Montenegro.jpeg", plot, height = 7, width = 9)
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE),
-            recovered = sum(recovered, na.rm = TRUE)) %>% 
+            recovered = sum(recovered, na.rm = TRUE),
+            pcr = first(pcr)) %>% 
   mutate(confirmed_diff = c(2, diff(confirmed, lag = 1)),
          deaths_diff = c(0, diff(deaths, lag = 1)),
          recovered_diff = c(0, diff(recovered, lag = 1))) %>% 
   ungroup() %>% 
-  select(date, confirmed = confirmed_diff, deaths = deaths_diff, recovered = recovered_diff) %>%
-  pivot_longer(cols = 2:3, names_to = "type", values_to = "cases") %>% 
-  mutate(type = recode(type, "confirmed" = "Ukupno zaraženih",
-                             "recovered" = "Oporavljeni",
-                             "deaths" = "Preminuli")) %>% 
+  select(date, 
+         confirmed = confirmed_diff, 
+         deaths = deaths_diff, 
+         recovered = recovered_diff,
+        `# of RT-PCR test` = pcr) %>%
+  pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>% 
+  mutate(type = recode(type, "confirmed" = "confirmed",
+                             "recovered" = "recovered",
+                             "deaths" = "deaths")) %>% 
   ggplot(aes(x = date, y = cases, 
-             color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
-             fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
+             color = factor(type, levels = c("confirmed", "recovered", "deaths")), 
+             fill = factor(type, levels = c("confirmed", "recovered", "deaths")))) +
   geom_col(width = 0.5) +
-  scale_color_ptol() +
-  scale_fill_ptol() +
-  theme_par() +
-  labs(title = "COVID-19 Dnevno stanje u Crnoj Gori",
-       subtitle = paste0("ažurirano ", Sys.Date()),
-       caption = "https://www.ijzcg.me/me/ncov") +
+  geom_line(aes(y = `# of RT-PCR test`), color = "black", size = 0.3, alpha = 0.5) +
+  scale_color_wsj() +
+  scale_fill_wsj() +
+  theme_wsj() +
+  labs(title = "COVID-19 Daily New Cases",
+       subtitle = paste0("updated ", Sys.Date())) +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
         legend.title = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         legend.position = "bottom")
 
-ggsave("COVID-19 New Cases in Montenegro.jpeg", plot, height = 8, width = 7)
+ggsave("COVID-19 New Cases in Montenegro.jpeg", plot, height = 6, width = 9)
 
 
-max_y <- covid_data %>%
+max_y <- covid19_data %>%
                group_by(date) %>%
                summarize(confirmed = sum(confirmed, na.rm = TRUE)) %>%
                select(confirmed) %>%
                max() + 10
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE)) %>% 
@@ -113,7 +123,7 @@ plot <- plot + annotate("text", x = 3, y = max_y+5, label = "Vojna pomoć", colo
 
 ggsave("COVID-19 Growth in Montenegro.jpeg", plot, height = 8, width = 11)
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
   group_by(date, municipality) %>%
   summarize(confirmed = mean(confirmed, na.rm = TRUE),
             recovered = mean(recovered, na.rm = TRUE)) %>% 
@@ -142,12 +152,12 @@ plot <- map_data("world") %>%
   coord_fixed(ratio = 1.5) +
   theme_map()
 
-plot <- plot + geom_point(data = covid_data %>%
+plot <- plot + geom_point(data = covid19_data %>%
                   filter(date == last(date)), 
                   aes(x = long, y = lat, size = confirmed),
                   show.legend = F, alpha = 0.7, color = "#004488")
 
-plot <- plot + geom_point(data = covid_data %>%
+plot <- plot + geom_point(data = covid19_data %>%
                             filter(date == last(date)), 
                           aes(x = long, y = lat, size = active),
                           show.legend = F, alpha = 0.7, color = "#BB5566")
@@ -156,7 +166,7 @@ plot <- plot + scale_size(range = c(2, 35))
 
 ggsave("COVID-19 Montenegro Map.jpeg", plot, height = 8, width = 8)
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
   mutate(`confirmed/5000 people` = 5000 * confirmed / population,
          `recovered/5000 people` = 5000 * recovered / population) %>% 
   group_by(date, municipality) %>%
@@ -180,7 +190,7 @@ plot <- covid_data %>%
 
 ggsave("COVID-19 Municipality Data in Montenegro 2.jpeg", plot, height = 8, width = 10)
 
-plot <- covid_data %>%
+plot <- covid19_data %>%
   group_by(date) %>%
   summarize(confirmed = sum(confirmed, na.rm = TRUE),
             deaths = sum(deaths, na.rm = TRUE),
@@ -190,27 +200,27 @@ plot <- covid_data %>%
          deaths = 100000 * deaths / population_mne,
          recovered = 100000 * recovered / population_mne) %>% 
   pivot_longer(cols = 2:4, names_to = "type", values_to = "cases") %>%
-  mutate(type = recode(type, "confirmed" = "Ukupno zaraženih", 
-                             "deaths" = "Preminuli", 
-                             "recovered" = "Oporavljeni")) %>% 
+  mutate(type = recode(type, "confirmed" = "Confirmed",
+                             "recovered" = "Recovered",
+                             "deaths" = "Deaths")) %>% 
   ungroup() %>%
   ggplot(aes(x = date, y = cases, 
-             color = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")), 
-             fill = factor(type, levels = c("Ukupno zaraženih", "Oporavljeni", "Preminuli")))) +
+             color = factor(type, levels = c("Confirmed", "Recovered", "Deaths")), 
+             fill = factor(type, levels = c("Confirmed", "Recovered", "Deaths")))) +
   geom_area(position = "dodge") +
-  scale_color_ptol() +
-  scale_fill_ptol() +
-  theme_par() +
-  labs(title = "COVID-19 Broj zaraženih (na svakih 100,000 stanovnika) u Crnoj Gori",
-       subtitle = paste0("ažurirano ", Sys.Date()),
-       caption = "https://www.ijzcg.me/me/ncov") +
+  scale_color_wsj() +
+  scale_fill_wsj() +
+  scale_y_continuous(label = comma) +
+  theme_wsj() +
+  labs(title = "per 100,000.jpeg",
+       subtitle = paste0("updated ", Sys.Date())) +
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         legend.title = element_blank(),
         legend.position = "bottom")
 
-ggsave("COVID-19 Cases in Montenegro 2.jpeg", plot, height = 8, width = 7)
+ggsave("COVID-19 Cases in Montenegro 2.jpeg", plot, height = 7, width = 9)
  
 
 
